@@ -1,6 +1,6 @@
 //svg dimensions
 var width = 1200;
-var height = 600;
+var height = 1000;
 
 //pie radius
 var radius = (Math.min(width, height) / 2) * 0.5;
