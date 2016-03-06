@@ -55,9 +55,6 @@ function zoom(d) {
   //remove previous pie
   d3.selectAll('g.arc').remove()
 
-  //DEBUG
-  console.log(children);
-
   //make svg g elements as arcs
   var arcs = svg.selectAll('g.arc')
   .data(pie(children))
@@ -88,12 +85,15 @@ function zoom(d) {
 
   var ticks =
   svg.selectAll("line")
-  .data(pie(children)).enter().append("line")
+  .data(pie(children))
+  .enter()
+  .append("line")
+  .filter(function (d) { return ratio(d).isMinimal })
 
   ticks.attr("x1", 0)
   .attr("x2", 0)
-  .attr("y1", -radius*1.2)
-  .attr("y2", -radius*1.05)
+  .attr("y1", - radius*1.3)
+  .attr("y2", - radius*1.01)
   .attr("stroke", "gray")
   .attr("transform", function(d) {
     return "rotate(" + (d.startAngle+d.endAngle)/2 * (180/Math.PI) + ")";
@@ -119,12 +119,23 @@ function zoom(d) {
   })
   .attr("dy", "0.35em")
   .attr("text-anchor", "middle")
-  .text(function(d){
-    var precent = d.data.value/(d.data.parent ? d.data.parent.size : 1);
-    if (precent < 0.01) {
-      return '';
-    }
-    return d3.format("%")(precent);
+  .text(function (d) {
+    nodeRatio = ratio(d)
+    return ( nodeRatio.isMinimal ? d3.format("%")(nodeRatio.value) : '')
   });
 
+}
+
+/**
+ * calculate the ratio of this nodes value within its parent node
+ * @param   d - the node
+ * @return {Boolean,real} whether this ratio is above minimal threshold,
+ * and the ratio (between 0 and 1)
+ */
+function ratio(d){
+  var ratio = d.data.value/(d.data.parent ? d.data.parent.size : 1);
+  if (ratio < 0.01) { // less than one precent
+    return {'isMinimal':false, 'value': ratio};
+  }
+  return {'isMinimal':true, 'value': ratio};
 }
