@@ -98,7 +98,9 @@ function zoom(d) {
 
   ticks.attr("x1", 0)
   .attr("x2", 0)
-  .attr("y1",  - radius*1.3) //TODO modify lines to fit label by labelDist
+  .attr("y1", function (d,i) {
+    return - (radius*(1.3) + i*4) //see function labelDist 
+  }) //TODO modify lines to fit label by labelDist
   .attr("y2", - radius*1.01)
   .attr("stroke", "gray")
   .attr("transform", function(d) {
@@ -108,7 +110,6 @@ function zoom(d) {
   //ticks labels
 
   //remove previous ticks labels
-
   svg.selectAll(".ticks-label").remove()
 
   var labels =
