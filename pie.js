@@ -121,7 +121,7 @@ function zoom(d) {
   .attr("text-anchor", "middle")
   .text(function (d) {
     nodeRatio = ratio(d)
-    return ( nodeRatio.isMinimal ? d3.format("%")(nodeRatio.value) : '')
+    return ( nodeRatio.isMinimal ? d3.format("%")(nodeRatio.value) +' ' +  d.data.name : '')
   });
 
 }
