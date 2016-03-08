@@ -77,9 +77,14 @@ function zoom(d) {
     return d.data.name + ' : ' + d3.format(",d")(d.data.size);
   })
 
-  //ticks
-  //TODO display fewer ticks
+  /** Ticks and lables **/
 
+  //helper method, returns the distance of the nodes label
+  function labelDist(d,i) {
+    return radius*1.4 + i*2; //magic numbers, seriously
+  }
+
+  /** Handle Ticks **/
   //remove previous ticks
   svg.selectAll("line").remove()
 
@@ -88,11 +93,12 @@ function zoom(d) {
   .data(pie(children))
   .enter()
   .append("line")
+  //plot ticks from minimal sizes only
   .filter(function (d) { return ratio(d).isMinimal })
 
   ticks.attr("x1", 0)
   .attr("x2", 0)
-  .attr("y1", - radius*1.3)
+  .attr("y1",  - radius*1.3) //TODO modify lines to fit label by labelDist
   .attr("y2", - radius*1.01)
   .attr("stroke", "gray")
   .attr("transform", function(d) {
@@ -102,16 +108,16 @@ function zoom(d) {
   //ticks labels
 
   //remove previous ticks labels
-  //TODO set class ticks-lables
-  svg.selectAll("text").remove()
+
+  svg.selectAll(".ticks-label").remove()
 
   var labels =
   svg.selectAll("text")
   .data(pie(children)).enter().append("text")
 
-  labels.attr("class", "value")
-  .attr("transform", function(d) {
-    var dist=radius*1.4;
+  labels.attr("class", "ticks-label")
+  .attr("transform", function(d,i) {
+    var dist=labelDist(d,i);
     var winkel=(d.startAngle+d.endAngle)/2;
     var x=dist*Math.sin(winkel);
     var y=-dist*Math.cos(winkel);
