@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Zoomable Pie</title>
-    <!-- <script src="d3.min.js"></script> -->
-    <!-- TODO: link to d3js.org -->
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <link href="/pie.css" rel="stylesheet" type="text/css">
-  </head>
-  <body>
-    <div id="pie"></div>
-    <script type="text/javascript" src=pie.js></script>
+<head>
+  <meta charset="utf-8">
+  <title>Zoomable Pie</title>
+  <script src="lib/d3/d3.js"></script>
+  <!-- TODO: link to d3js.org -->
+  <!-- <script src="//d3js.org/d3.v3.min.js"></script> -->
 
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <!-- Specific CSS -->
+  <link href="/pie.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <div class="row">
+    <div class="col-md-4" id="detail">
+      <h1>detail</h1>
+    </div>
+    <div class="col-md-7" id="pie">
+      <h1>Chart</h1>
+      <script type="text/javascript" src=pie.js></script>
+    </div>
+    <div class="col-md-1" id="legend">
+      <h1>legend</h1>
+    </div>
+  </div>
   </body>
-</html>
+  </html>
