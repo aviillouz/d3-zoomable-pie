@@ -34,7 +34,7 @@ var partition = d3.layout.partition().value(value).sort(null)
 //pie layout handels one layer of the data tree
 var pie = d3.layout.pie().value(value).sort(null)
 //fetch data and zoom on the root
-d3.json('data.json', function (error, data) {
+d3.json('data-2014.json', function (error, data) {
   var tree = partition(data)
   var root = tree[0]
   zoom(root)
@@ -70,7 +70,7 @@ function zoom(d) {
     return color(d.data.name)
     //on click recursivly zoom to clicked child
   }).on('click',zoom)
-    .on('mouseover',hover)
+  .on('mouseover',hover)
 
 
   //add title for native tooltip
@@ -137,73 +137,81 @@ function zoom(d) {
 
 function hover(d) {
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+  width = 500 - margin.left - margin.right,
+  height = 500 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], 0.1);
+  var x = d3.scale.ordinal()
+  .rangeRoundBands([0, width], 0.1);
 
-var y = d3.scale.linear()
-    .range([height, 0]);
+  var y = d3.scale.linear()
+  .range([height, 0]);
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+  var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom");
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(10, "%");
-d3.select("#detail svg").remove()
-var svg = d3.select("#detail").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+  var yAxis = d3.svg.axis()
+  .scale(y)
+  .orient("left")
+  .ticks(10);
+
+  d3.select("#detail svg").remove()
+
+  var svg = d3.select("#detail").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
   .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.tsv("bar.tsv", type, function(error, data) {
-  if (error) throw error;
+  d3.json("data-2013-flat.json", function(error, data) {
+    if (error) throw error;
+    x.domain([2012,2013,2014]);
+    y.domain([0, d3.max(data, function(d) { return d.amount; })]);
 
-  x.domain(data.map(function(d) { return d.letter; }));
-  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
 
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
+    svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
     .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Frequency");
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("סכום");
 
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.letter); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.frequency); })
-      .attr("height", function(d) { return height - y(d.frequency); });
-});
+    function o(d) {
+      return (d.data ? d.data : d)
+    }
 
-function type(d) {
-  d.frequency = +d.frequency;
-  return d;
-}
+    var match = data.find(function (e,i,array) {
+       (e.name === d.data.name) ?
+       console.log(e.amount,d.data.amount,d.data.amount - e.amount) : 0;
+       return e.name === d.data.name;
+     })
+
+    svg.selectAll(".bar")
+    .data([match,d.data])
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", function(d) { return x(o(d).year); })
+    .attr("y", function(d) { return y(o(d).amount); })
+    .attr("height", function(d) { return height - y(o(d).amount); })
+    .attr("width", x.rangeBand())
+
+  });
 }
 
 /**
- * calculate the ratio of this nodes value within its parent node
- * @param   d - the node
- * @return {Boolean,real} whether this ratio is above minimal threshold,
- * and the ratio (between 0 and 1)
- */
+* calculate the ratio of this nodes value within its parent node
+* @param   d - the node
+* @return {Boolean,real} whether this ratio is above minimal threshold,
+* and the ratio (between 0 and 1)
+*/
 function ratio(d){
   var ratio = d.data.value/(d.data.parent ? d.data.parent.size : 1);
   if (ratio < 0.01) { // less than one precent
